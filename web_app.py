@@ -27,12 +27,11 @@ def strict_shorthand_corrector(val):
         return None
 
 # Configure the web page layout setup
-st.set_page_config(page_title="MSD Zim Psychrometric Calculator", page_icon="🌤️", layout="centered")
+st.set_page_config(page_title="MSD Zim Calculator", page_icon="🌦️", layout="centered")
 
 # Visual Web Headers
-st.title("zw MSD Zim Psychrometric Calculator")
-st.markdown("### Altitude-Adjusted Psychrometric Calculations")
-st.write("Official station parameters lookup designed for synoptic and research observers.")
+st.title("🌦️ MSD Psychrometric Calculator")
+st.write("Live lookup for Relative Humidity (RH) & Dew Point Parameters.")
 
 st.divider()
 
