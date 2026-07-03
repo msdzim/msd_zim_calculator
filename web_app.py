@@ -120,18 +120,24 @@ st.divider()
 if st.button("Calculate Atmospheric Values", type="primary", use_container_width=True):
     if db_input and wb_input:
         try:
-            db_val = float(db_input)
-            wb_val = float(wb_input)
+            # --- SWAPPED WITH CORRECTOR LOGIC ---
+            db_val = strict_shorthand_corrector(db_input)
+            wb_val = strict_shorthand_corrector(wb_input)
             
+            if db_val is None or wb_val is None:
+                st.error("⚠️ Invalid entry. Please check the entered values.")
+                st.stop()
+            # ------------------------------------
+
             results = calculate_humidity_and_dewpoint(db_val, wb_val, altitude)
-            
+
             st.success("### Calculations Complete")
-            
+
             res_col1, res_col2, res_col3 = st.columns(3)
             res_col1.metric("Station Pressure", f"{results['station_pressure_hPa']} hPa")
             res_col2.metric("Relative Humidity (RH)", f"{results['relative_humidity_pct']} %")
             res_col3.metric("Dewpoint Temperature", f"{results['dewpoint_c']} °C")
-            
+
         except ValueError as e:
             if "Wet bulb" in str(e):
                 st.error(f"Meteorological Rule Error: {str(e)}")
