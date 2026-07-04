@@ -102,8 +102,8 @@ if st.button("Calculate Parameters"):
         t_dry = float(strict_shorthand_corrector(dry_input))
         t_wet = float(strict_shorthand_corrector(wet_input))
         
-        # Calculate parameters behind the scenes (Station pressure output remains hidden)
-        rh, dew_point = calculate_humidity_and_dewpoint(t_dry, t_wet, altitude)
+        # FIXED: Added the third variable slot '_' to successfully capture and hide the station pressure output
+        rh, dew_point, _ = calculate_humidity_and_dewpoint(t_dry, t_wet, altitude)
         
         st.divider()
         
