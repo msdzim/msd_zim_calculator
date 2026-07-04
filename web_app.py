@@ -65,9 +65,9 @@ try:
 except:
     pass
 
-# Title streamlined to remove the redundant "MSD" text
-st.markdown("<h1 style='text-align: center; margin-bottom: 0px;'>Psychrometric Calculator</h1>", unsafe_html=True)
-st.markdown("<p style='text-align: center; color: gray;'>Live lookup for Relative Humidity (RH) & Dew Point Parameters.</p>", unsafe_html=True)
+# Corrected parameter name here from unsafe_html to unsafe_allow_html
+st.markdown("<h1 style='text-align: center; margin-bottom: 0px;'>Psychrometric Calculator</h1>", unsafe_allow_html=True)
+st.markdown("<p style='text-align: center; color: gray;'>Live lookup for Relative Humidity (RH) & Dew Point Parameters.</p>", unsafe_allow_html=True)
 
 st.divider()
 
