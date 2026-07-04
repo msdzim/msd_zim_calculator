@@ -85,7 +85,9 @@ col1, col2 = st.columns(2)
 with col1:
     selected_station = st.selectbox("Select Weather Station:", list(ZIM_STATIONS.keys()))
     station_meta = ZIM_STATIONS[selected_station]
-    altitude = station_meta["altitude"]
+    
+    # SAFE FIX: Checks both lowercase 'altitude' and uppercase 'Altitude' to prevent KeyError crashes
+    altitude = station_meta.get("altitude", station_meta.get("Altitude", 1400))
     st.caption(f"📍 Base Altitude: {altitude} meters")
 
 with col2:
