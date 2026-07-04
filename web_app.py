@@ -103,28 +103,37 @@ st.markdown(f"📍 **Province:** {province_label} | **Base Altitude:** {altitude
 dry_input = st.text_input("Dry Bulb Temp (°C or shorthand):")
 wet_input = st.text_input("Wet Bulb Temp (°C or shorthand):")
 
-if st.button("Calculate Parameters"):
+# Button matches the text in image 49709.jpg
+if st.button("Calculate Atmospheric Values"):
     try:
         t_dry = float(strict_shorthand_corrector(dry_input))
         t_wet = float(strict_shorthand_corrector(wet_input))
         
         calc_result = calculate_humidity_and_dewpoint(t_dry, t_wet, altitude)
         
-        # Safe array index unpacking extraction to prevent 'Details: 0' crashes
-        if isinstance(calc_result, (list, tuple)):
-            rh = calc_result[0]
-            dew_point = calc_result[1]
+        # Extract fields directly from the dictionary returned by psychro_core
+        if isinstance(calc_result, dict):
+            pressure = calc_result.get("station_pressure", "N/A")
+            rh = calc_result.get("rh", calc_result.get("relative_humidity", "N/A"))
+            dew_point = calc_result.get("dewpoint", calc_result.get("dew_point", "N/A"))
         else:
-            rh = calc_result
-            dew_point = "N/A"
+            # Fallback if it returns a tuple
+            pressure = "N/A"
+            rh = calc_result[0] if len(calc_result) > 0 else "N/A"
+            dew_point = calc_result[1] if len(calc_result) > 1 else "N/A"
         
-        st.divider()
-        st.subheader("📊 Output Parameters")
+        # Green success banner matching image 49709.jpg
+        st.success("Calculations Complete")
         
-        display_rh = f"{rh:.1f}%" if isinstance(rh, (int, float)) else str(rh)
-        display_dp = f"{dew_point:.1f} °C" if isinstance(dew_point, (int, float)) else f"{dew_point} °C"
+        # Format strings for clean metric display
+        display_pres = f"{pressure:.1f} hPa" if isinstance(pressure, (int, float)) else f"{pressure}"
+        display_rh = f"{rh:.1f} %" if isinstance(rh, (int, float)) else f"{rh}"
+        display_dp = f"{dew_point:.1f} °C" if isinstance(dew_point, (int, float)) else f"{dew_point}"
         
-        st.metric("Relative Humidity", display_rh)
-        st.metric("Dew Point", display_dp)
+        # Single column layout metric blocks matching the look in the picture
+        st.metric("Station Pressure", display_pres)
+        st.metric("Relative Humidity (RH)", display_rh)
+        st.metric("Dewpoint Temperature", display_dp)
+        
     except Exception as e:
         st.error(f"Error parsing inputs. Please verify entries format. Details: {e}")
