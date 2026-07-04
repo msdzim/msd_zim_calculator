@@ -28,25 +28,54 @@ def strict_shorthand_corrector(val):
 
 def get_temperature_description(t_dry, altitude_m):
     """
-    Calculates temperature description dynamically based on the official 
-    altitude-adjusted matrix from file 58622b25-f44d-4452-ac96-7e4a48488ace
+    Strictly maps the temperature to the official matrix columns from 
+    file 5e1bd456-368a-4af6-85ca-9e49d31227dd based on nearest station altitude.
     """
-    # Calculate the adjustment shift (-2°C per 250m away from the 1000m baseline)
-    altitude_shift = ((altitude_m - 1000) / 250.0) * 2.0
-    
-    # Adjust baseline boundaries from the 1000m column reference
-    if t_dry >= (37.0 - altitude_shift):
-        return "Very Hot 🔴"
-    elif t_dry >= (33.0 - altitude_shift):
-        return "Hot 🟠"
-    elif t_dry >= (29.0 - altitude_shift):
-        return "Warm 🟡"
-    elif t_dry >= (25.0 - altitude_shift):
-        return "Mild 🟢"
-    elif t_dry >= (21.0 - altitude_shift):
-        return "Cool 🔵"
+    # Group the station into its closest table reference column
+    if altitude_m >= 1375:
+        # --- 1500m Column Thresholds ---
+        if t_dry >= 33.0:
+            return "Very Hot 🔴"
+        elif t_dry >= 29.0:
+            return "Hot 🟠"
+        elif t_dry >= 25.0:
+            return "Warm 🟡"
+        elif t_dry >= 21.0:
+            return "Mild 🟢"
+        elif t_dry >= 17.0:
+            return "Cool 🔵"  # Ensures 17°C in Harare (1490m) matches here perfectly
+        else:
+            return "Cold ❄️"
+            
+    elif altitude_m >= 1125:
+        # --- 1250m Column Thresholds ---
+        if t_dry >= 35.0:
+            return "Very Hot 🔴"
+        elif t_dry >= 31.0:
+            return "Hot 🟠"
+        elif t_dry >= 27.0:
+            return "Warm 🟡"
+        elif t_dry >= 23.0:
+            return "Mild 🟢"
+        elif t_dry >= 19.0:
+            return "Cool 🔵"
+        else:
+            return "Cold ❄️"
+            
     else:
-        return "Cold ❄️"
+        # --- 1000m Column Thresholds (And Low-veld Stations) ---
+        if t_dry >= 37.0:
+            return "Very Hot 🔴"
+        elif t_dry >= 33.0:
+            return "Hot 🟠"
+        elif t_dry >= 29.0:
+            return "Warm 🟡"
+        elif t_dry >= 25.0:
+            return "Mild 🟢"
+        elif t_dry >= 21.0:
+            return "Cool 🔵"
+        else:
+            return "Cold ❄️"
 
 # Configure the web page layout setup
 st.set_page_config(page_title="MSD Zim Calculator", page_icon="🌦️", layout="centered")
@@ -92,7 +121,7 @@ if st.button("Calculate Atmospheric Values", type="primary", use_container_width
 
             st.success("Calculations Complete")
 
-            # Determine the condition using our updated logic
+            # Determine the condition using our fixed, strict-column logic
             temp_condition = get_temperature_description(db_val, altitude)
 
             # Displays your metrics alongside the new classification line
