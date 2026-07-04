@@ -56,16 +56,16 @@ def get_temperature_description(t_dry, altitude_m):
 # Configure the web page layout setup
 st.set_page_config(page_title="MSD Zim Calculator", page_icon="🌦️", layout="centered")
 
-# --- APP TITLE WITH LOGO HEADER ---
-header_col1, header_col2 = st.columns([0.2, 0.8])
+# --- APP TITLE WITH THE EXACT PROVIDED LOGO ---
+header_col1, header_col2 = st.columns([0.25, 0.75])
 
 with header_col1:
     try:
-        # Fetches the original circular badge emblem directly from the official MSD domain
-        official_logo_url = "https://www.weatherzw.org.zw/wp-content/uploads/2024/09/cropped-msd-logo-1.png"
-        st.image(official_logo_url, width=90)
+        # Uses the exact direct media URL link you provided
+        official_logo = "https://weadapt.org/wp-content/uploads/2023/05/msd_logo.jpg"
+        st.image(official_logo, width=110)
     except:
-        pass
+        st.title("🌦️")
 
 with header_col2:
     st.title("MSD Psychrometric Calculator")
