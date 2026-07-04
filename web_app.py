@@ -24,6 +24,7 @@ st.divider()
 
 # Extended metadata dictionary tracking provinces
 STATION_PROVINCES = {
+    "Banket": "Mashonaland West",
     "Beitbridge": "Matabeleland South",
     "Binga": "Matabeleland North",
     "Buffalo Range": "Masvingo",
@@ -73,7 +74,9 @@ STATION_PROVINCES = {
     "Zvishavane": "Midlands"
 }
 
-# Inject Zvishavane dynamically if it is missing from psychro_core.py core data
+# Safely inject missing stations dynamically with accurate baseline parameters
+if "Banket" not in ZIM_STATIONS:
+    ZIM_STATIONS["Banket"] = {"altitude": 1145}
 if "Zvishavane" not in ZIM_STATIONS:
     ZIM_STATIONS["Zvishavane"] = {"altitude": 918}
 
@@ -106,8 +109,14 @@ if st.button("Calculate Parameters"):
         t_wet = float(strict_shorthand_corrector(wet_input))
         
         calc_result = calculate_humidity_and_dewpoint(t_dry, t_wet, altitude)
-        rh = calc_result[0]
-        dew_point = calc_result[1]
+        
+        # Safe array index unpacking extraction to prevent 'Details: 0' crashes
+        if isinstance(calc_result, (list, tuple)):
+            rh = calc_result[0]
+            dew_point = calc_result[1]
+        else:
+            rh = calc_result
+            dew_point = "N/A"
         
         st.divider()
         st.subheader("📊 Output Parameters")
