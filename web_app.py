@@ -45,10 +45,8 @@ def get_temperature_description(t_dry, altitude_m):
         return "Mild 🟢"
     elif t_dry >= (21.0 - altitude_shift):
         return "Cool 🔵"
-    elif t_dry >= (17.0 - altitude_shift):
-        return "Cold ❄️"
     else:
-        return "Very Cold 🥶"
+        return "Cold ❄️"
 
 # Configure the web page layout setup
 st.set_page_config(page_title="MSD Zim Calculator", page_icon="🌦️", layout="centered")
@@ -94,7 +92,7 @@ if st.button("Calculate Atmospheric Values", type="primary", use_container_width
 
             st.success("Calculations Complete")
 
-            # Determine the condition using our new single-feature logic
+            # Determine the condition using our updated logic
             temp_condition = get_temperature_description(db_val, altitude)
 
             # Displays your metrics alongside the new classification line
