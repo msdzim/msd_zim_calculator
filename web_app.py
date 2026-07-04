@@ -31,82 +31,65 @@ def get_temperature_description(t_dry, altitude_m):
     Strictly maps the temperature to the official matrix columns from 
     file 5e1bd456-368a-4af6-85ca-9e49d31227dd based on nearest station altitude.
     """
-    # Group the station into its closest table reference column
     if altitude_m >= 1375:
-        # --- 1500m Column Thresholds ---
-        if t_dry >= 33.0:
-            return "Very Hot 🔴"
-        elif t_dry >= 29.0:
-            return "Hot 🟠"
-        elif t_dry >= 25.0:
-            return "Warm 🟡"
-        elif t_dry >= 21.0:
-            return "Mild 🟢"
-        elif t_dry >= 17.0:
-            return "Cool 🔵"  # Ensures 17°C in Harare (1490m) matches here perfectly
-        else:
-            return "Cold ❄️"
-            
+        if t_dry >= 33.0: return "Very Hot 🔴"
+        elif t_dry >= 29.0: return "Hot 🟠"
+        elif t_dry >= 25.0: return "Warm 🟡"
+        elif t_dry >= 21.0: return "Mild 🟢"
+        elif t_dry >= 17.0: return "Cool 🔵"
+        else: return "Cold ❄️"
     elif altitude_m >= 1125:
-        # --- 1250m Column Thresholds ---
-        if t_dry >= 35.0:
-            return "Very Hot 🔴"
-        elif t_dry >= 31.0:
-            return "Hot 🟠"
-        elif t_dry >= 27.0:
-            return "Warm 🟡"
-        elif t_dry >= 23.0:
-            return "Mild 🟢"
-        elif t_dry >= 19.0:
-            return "Cool 🔵"
-        else:
-            return "Cold ❄️"
-            
+        if t_dry >= 35.0: return "Very Hot 🔴"
+        elif t_dry >= 31.0: return "Hot 🟠"
+        elif t_dry >= 27.0: return "Warm 🟡"
+        elif t_dry >= 23.0: return "Mild 🟢"
+        elif t_dry >= 19.0: return "Cool 🔵"
+        else: return "Cold ❄️"
     else:
-        # --- 1000m Column Thresholds (And Low-veld Stations) ---
-        if t_dry >= 37.0:
-            return "Very Hot 🔴"
-        elif t_dry >= 33.0:
-            return "Hot 🟠"
-        elif t_dry >= 29.0:
-            return "Warm 🟡"
-        elif t_dry >= 25.0:
-            return "Mild 🟢"
-        elif t_dry >= 21.0:
-            return "Cool 🔵"
-        else:
-            return "Cold ❄️"
+        if t_dry >= 37.0: return "Very Hot 🔴"
+        elif t_dry >= 33.0: return "Hot 🟠"
+        elif t_dry >= 29.0: return "Warm 🟡"
+        elif t_dry >= 25.0: return "Mild 🟢"
+        elif t_dry >= 21.0: return "Cool 🔵"
+        else: return "Cold ❄️"
 
 # Configure the web page layout setup
 st.set_page_config(page_title="MSD Zim Calculator", page_icon="🌦️", layout="centered")
 
-# Visual Web Headers
-st.title("🌦️ MSD Psychrometric Calculator")
-st.write("Live lookup for Relative Humidity (RH) & Dew Point Parameters.")
+# --- APP TITLE WITH LOGO HEADER ---
+header_col1, header_col2 = st.columns([0.2, 0.8])
+
+with header_col1:
+    try:
+        # Fetches the original circular badge emblem directly from the official MSD domain
+        official_logo_url = "https://www.weatherzw.org.zw/wp-content/uploads/2024/09/cropped-msd-logo-1.png"
+        st.image(official_logo_url, width=90)
+    except:
+        pass
+
+with header_col2:
+    st.title("MSD Psychrometric Calculator")
+    st.write("Live lookup for Relative Humidity (RH) & Dew Point Parameters.")
 
 st.divider()
 
 col1, col2 = st.columns(2)
 
 with col1:
-    # Dropdown choice selection field
     selected_station = st.selectbox(
         "Select Weather Station:",
         options=sorted(list(ZIM_STATIONS.keys()))
     )
-    
     altitude = ZIM_STATIONS[selected_station]["altitude_m"]
     province = ZIM_STATIONS[selected_station]["province"]
     st.caption(f"📍 Province: {province} | Base Altitude: {altitude} meters")
 
 with col2:
-    # Text entry inputs
     db_input = st.text_input("Dry Bulb Temp (°C or shorthand):", placeholder="e.g., 24.9 or 249")
     wb_input = st.text_input("Wet Bulb Temp (°C or shorthand):", placeholder="e.g., 21.3 or 213")
 
 st.divider()
 
-# Calculation execution block trigger
 if st.button("Calculate Atmospheric Values", type="primary", use_container_width=True):
     if db_input and wb_input:
         try:
@@ -121,10 +104,7 @@ if st.button("Calculate Atmospheric Values", type="primary", use_container_width
 
             st.success("Calculations Complete")
 
-            # Determine the condition using our fixed, strict-column logic
             temp_condition = get_temperature_description(db_val, altitude)
-
-            # Displays your metrics alongside the new classification line
             st.markdown(f"### 🌡️ Temperature Condition: **{temp_condition}**")
             
             res_col1, res_col2, res_col3 = st.columns(3)
