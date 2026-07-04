@@ -12,7 +12,7 @@ ZIM_STATIONS = {
     "Masvingo": {"altitude_m": 1095, "province": "Masvingo"},
     "Beitbridge": {"altitude_m": 457, "province": "Matabeleland South"},
     "Nyanga": {"altitude_m": 1679, "province": "Manicaland"},
-    "Chiredzi": {"altitude_m": 429, "province": "Masvingo"},
+    "Chiredzi": {"altitude_m": 429, "province": "Masvingo"} ,
     
     # --- New Additions (Batch 2) ---
     "Rupike": {"altitude_m": 700, "province": "Masvingo"},
