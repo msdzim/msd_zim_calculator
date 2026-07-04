@@ -104,19 +104,19 @@ if st.button("Calculate Atmospheric Values", type="primary", use_container_width
             temp_condition = get_temperature_description(db_val, altitude)
             st.markdown(f"### 🌡️ Temperature Condition: **{temp_condition}**")
             
-            # Primary parameters display row
             res_col1, res_col2, res_col3 = st.columns(3)
             res_col1.metric("Station Pressure", f"{results['station_pressure_hPa']} hPa")
             res_col2.metric("Relative Humidity (RH)", f"{results['relative_humidity_pct']} %")
             res_col3.metric("Dewpoint Temperature", f"{results['dewpoint_c']} °C")
 
-            # --- ADDED FEATURE: CLOUD BASE HEIGHT ---
+            # --- CLOUD BASE HEIGHT WITH OPERATIONAL TIMEFRAME NOTE ---
             dewpoint = results['dewpoint_c']
-            # Standard convective formula: (Dry Bulb - Dew Point) / 2.5 * 1000
             if db_val >= dewpoint:
                 cloud_base_ft = round(((db_val - dewpoint) / 2.5) * 1000)
                 st.divider()
-                st.metric("Estimated Convective Cloud Base", f"{cloud_base_ft:,} ft AGL", help="Height above ground level where cumulus clouds typically begin forming.")
+                st.metric("Estimated Convective Cloud Base", f"{cloud_base_ft:,} ft AGL")
+                # Added the professional user operation advice note here
+                st.caption("⚠️ *Note: This estimate is highly accurate for convective cloud formation primarily between 08:00 AM and 03:00 PM when surface temperatures are rising.*")
             else:
                 st.divider()
                 st.info("☁️ Air is completely saturated at ground level (Fog/Mist conditions).")
