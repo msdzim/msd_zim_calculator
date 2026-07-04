@@ -56,20 +56,18 @@ def get_temperature_description(t_dry, altitude_m):
 # Configure the web page layout setup
 st.set_page_config(page_title="MSD Zim Calculator", page_icon="🌦️", layout="centered")
 
-# --- APP TITLE WITH THE EXACT PROVIDED LOGO ---
-header_col1, header_col2 = st.columns([0.25, 0.75])
+# --- PROFESSIONAL CENTERED HEADER BLOCK ---
+try:
+    official_logo = "https://weadapt.org/wp-content/uploads/2023/05/msd_logo.jpg"
+    img_col1, img_col2, img_col3 = st.columns([1, 1.2, 1])
+    with img_col2:
+        st.image(official_logo, use_container_width=True)
+except:
+    pass
 
-with header_col1:
-    try:
-        # Uses the exact direct media URL link you provided
-        official_logo = "https://weadapt.org/wp-content/uploads/2023/05/msd_logo.jpg"
-        st.image(official_logo, width=110)
-    except:
-        st.title("🌦️")
-
-with header_col2:
-    st.title("MSD Psychrometric Calculator")
-    st.write("Live lookup for Relative Humidity (RH) & Dew Point Parameters.")
+# Title streamlined to remove the redundant "MSD" text
+st.markdown("<h1 style='text-align: center; margin-bottom: 0px;'>Psychrometric Calculator</h1>", unsafe_html=True)
+st.markdown("<p style='text-align: center; color: gray;'>Live lookup for Relative Humidity (RH) & Dew Point Parameters.</p>", unsafe_html=True)
 
 st.divider()
 
