@@ -104,10 +104,10 @@ if st.button("Calculate Atmospheric Values", type="primary", use_container_width
             temp_condition = get_temperature_description(db_val, altitude)
             st.markdown(f"### 🌡️ Temperature Condition: **{temp_condition}**")
             
-            res_col1, res_col2, res_col3 = st.columns(3)
-            res_col1.metric("Station Pressure", f"{results['station_pressure_hPa']} hPa")
-            res_col2.metric("Relative Humidity (RH)", f"{results['relative_humidity_pct']} %")
-            res_col3.metric("Dewpoint Temperature", f"{results['dewpoint_c']} °C")
+            # Changed from 3 columns to 2 columns to remove Station Pressure entirely
+            res_col1, res_col2 = st.columns(2)
+            res_col1.metric("Relative Humidity (RH)", f"{results['relative_humidity_pct']} %")
+            res_col2.metric("Dewpoint Temperature", f"{results['dewpoint_c']} °C")
 
             # --- CLOUD BASE HEIGHT WITH OPERATIONAL TIMEFRAME NOTE ---
             dewpoint = results['dewpoint_c']
@@ -115,7 +115,6 @@ if st.button("Calculate Atmospheric Values", type="primary", use_container_width
                 cloud_base_ft = round(((db_val - dewpoint) / 2.5) * 1000)
                 st.divider()
                 st.metric("Estimated Convective Cloud Base", f"{cloud_base_ft:,} ft AGL")
-                # Added the professional user operation advice note here
                 st.caption("⚠️ *Note: This estimate is highly accurate for convective cloud formation primarily between 08:00 AM and 03:00 PM when surface temperatures are rising.*")
             else:
                 st.divider()
