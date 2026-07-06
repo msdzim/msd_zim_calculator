@@ -72,24 +72,32 @@ ZIM_STATIONS = {
 def calculate_humidity_and_dewpoint(t_db, t_wb, altitude_m):
     """
     Calculates station pressure, relative humidity, and dewpoint 
-    specifically adjusted for high-altitude environments in Zimbabwe.
+    specifically adjusted for high-altitude environments in Zimbabwe
+    using highly precise Buck Formula (1981/1996) constants.
     """
-    # AUTOMATIC DECIMAL FIX: Converts met shorthand (e.g., 249 -> 24.9)
     if t_db > 70.0:
         t_db = t_db / 10.0
     if t_wb > 70.0:
         t_wb = t_wb / 10.0
 
-    # 1. Handle basic physical constraints / user input errors
     if t_wb > t_db:
         raise ValueError("Wet bulb temperature cannot be greater than dry bulb temperature.")
         
-    # 2. Derive station pressure (P) in hPa based on altitude
+    # 1. Derive station pressure (P) in hPa based on altitude
     P = 1013.25 * math.pow(1 - (0.00065 * altitude_m) / 288.15, 5.2558)
     
-    # 3. Saturation vapor pressure (es) via Tetens Equation
-    es_wb = 6.1078 * math.pow(10, (7.5 * t_wb) / (t_wb + 237.3))
-    es_db = 6.1078 * math.pow(10, (7.5 * t_db) / (t_db + 237.3))
+    # 2. Upgraded Saturation Vapor Pressure using Buck constants (for water > 0 °C)
+    # Formula: es = 6.1121 * exp((17.502 * T) / (240.97 + T))
+    pure_es_wb = 6.1121 * math.exp((17.502 * t_wb) / (240.97 + t_wb))
+    pure_es_db = 6.1121 * math.exp((17.502 * t_db) / (240.97 + t_db))
+    
+    # 3. Calculate Atmospheric Enhancement Factors (f) to adjust for station altitude pressure
+    f_wb = 1.0007 + (3.46e-6 * P)
+    f_db = 1.0007 + (3.46e-6 * P)
+    
+    # Final corrected saturation vapor pressures
+    es_wb = pure_es_wb * f_wb
+    es_db = pure_es_db * f_db
     
     # 4. Actual vapor pressure (e) using standard psychrometric constant adjustment
     A = 0.00066 * (1 + 0.00115 * t_wb)
@@ -99,10 +107,15 @@ def calculate_humidity_and_dewpoint(t_db, t_wb, altitude_m):
     rh = (e / es_db) * 100
     rh = max(0.0, min(100.0, rh))
     
-    # 6. Compute Dewpoint (Td)
+    # 6. Compute highly precise Dewpoint (Td) by reversing Buck's formula
     if e > 0:
-        log_e = math.log10(e / 6.1078)
-        t_dp = (237.3 * log_e) / (7.5 - log_e)
+        # Account for enhancement factor at dewpoint
+        f_dp = 1.0007 + (3.46e-6 * P)
+        e_pure = e / f_dp
+        
+        # Logarithmic inversion
+        val = math.log(e_pure / 6.1121)
+        t_dp = (240.97 * val) / (17.502 - val)
     else:
         t_dp = float('-inf') 
         
@@ -113,4 +126,4 @@ def calculate_humidity_and_dewpoint(t_db, t_wb, altitude_m):
     }
 
 if __name__ == "__main__":
-    print(f"Successfully loaded {len(ZIM_STATIONS)} Zimbabwean stations into the registry!")
+    print(f"Successfully loaded {len(ZIM_STATIONS)} Zimbabwean stations into the registry with Buck Formula coefficients!")
