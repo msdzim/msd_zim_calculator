@@ -72,8 +72,7 @@ ZIM_STATIONS = {
 def calculate_humidity_and_dewpoint(t_db, t_wb, altitude_m):
     """
     Calculates station pressure, relative humidity, and dewpoint 
-    specifically adjusted for high-altitude environments in Zimbabwe
-    using the official Tetens Formula and unventilated screen values.
+    specifically adjusted for high-altitude environments in Zimbabwe.
     """
     if t_db > 70.0:
         t_db = t_db / 10.0
@@ -86,19 +85,19 @@ def calculate_humidity_and_dewpoint(t_db, t_wb, altitude_m):
     # 1. Derive station pressure (P) in hPa based on altitude
     P = 1013.25 * math.pow(1 - (0.00065 * altitude_m) / 288.15, 5.2558)
     
-    # 2. Saturation vapor pressure (es) via Pure Tetens Equation
+    # 2. Saturation vapor pressure (es) via Tetens Equation
     es_wb = 6.1078 * math.pow(10, (7.5 * t_wb) / (t_wb + 237.3))
     es_db = 6.1078 * math.pow(10, (7.5 * t_db) / (t_db + 237.3))
     
-    # 3. Actual vapor pressure (e) using standard unventilated screen coefficient (A = 0.000799)
-    A = 0.000799 * (1 + 0.00115 * t_wb)
+    # 3. Actual vapor pressure (e) using standard baseline psychrometric constant adjustment
+    A = 0.00066 * (1 + 0.00115 * t_wb)
     e = es_wb - A * P * (t_db - t_wb)
     
     # 4. Compute Relative Humidity (RH) capped strictly between 0% and 100%
     rh = (e / es_db) * 100
     rh = max(0.0, min(100.0, rh))
     
-    # 5. Compute Dewpoint (Td) using Tetens Inversion
+    # 5. Compute Dewpoint (Td)
     if e > 0:
         log_e = math.log10(e / 6.1078)
         t_dp = (237.3 * log_e) / (7.5 - log_e)
@@ -112,4 +111,4 @@ def calculate_humidity_and_dewpoint(t_db, t_wb, altitude_m):
     }
 
 if __name__ == "__main__":
-    print(f"Successfully loaded {len(ZIM_STATIONS)} stations using pure Tetens math and unventilated setup!")
+    print(f"Successfully loaded {len(ZIM_STATIONS)} Zimbabwean stations into the registry!")
