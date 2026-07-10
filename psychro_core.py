@@ -95,7 +95,7 @@ def calculate_humidity_and_dewpoint(t_db, t_wb, altitude_m):
     es_db = 6.105 * math.exp((17.269 * t_db) / (t_db + 237.3))
     
     # 3. Actual vapor pressure (e) using Regnault's unventilated psychrometric factor (0.0008)
-    e = es_wb - 0.0008 * P * (t_db - t_wb)
+    e = es_wb - 0.00074 * P * (t_db - t_wb)
     
     # Safety clamp to ensure vapor pressure doesn't drop beneath zero
     if e < 0.01:
