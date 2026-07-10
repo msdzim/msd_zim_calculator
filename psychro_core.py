@@ -15,7 +15,7 @@ ZIM_STATIONS = {
     "Chiredzi": {"altitude_m": 429, "province": "Masvingo"} ,
     
     # --- New Additions (Batch 2) ---
-    "Rupike": {"altitude_m": 700, "province": "Masvingo"},
+    "Rupike": {"altitude_m": 695, "province": "Masvingo"},
     "Banket": {"altitude_m": 1149, "province": "Mashonaland West"},
     "Grand Reef": {"altitude_m": 1016, "province": "Manicaland"},
     "Rupire Mountain": {"altitude_m": 1210, "province": "Mashonaland Central"},
@@ -27,7 +27,7 @@ ZIM_STATIONS = {
     # --- Mashonaland Provinces ---
     "Chinhoyi": {"altitude_m": 1158, "province": "Mashonaland West"},
     "Kadoma": {"altitude_m": 1183, "province": "Mashonaland West"},
-    "Karoi": {"altitude_m": 1275, "province": "Mashonaland West"},
+    "Karoi": {"altitude_m": 1345, "province": "Mashonaland West"},
     "Kariba": {"altitude_m": 492, "province": "Mashonaland West"},
     "Mount Darwin": {"altitude_m": 980, "province": "Mashonaland Central"},
     "Mvurwi": {"altitude_m": 1485, "province": "Mashonaland Central"},
