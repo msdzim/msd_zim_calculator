@@ -71,8 +71,8 @@ ZIM_STATIONS = {
 
 def calculate_humidity_and_dewpoint(t_db, t_wb, altitude_m):
     """
-    Calculates station pressure, relative humidity, and dewpoint 
-    specifically adjusted for high-altitude environments in Zimbabwe.
+    Calculates slide-rule pressure brackets, relative humidity, and dewpoint
+    using Regnault's Equation to perfectly match historical Service slide rules.
     """
     if t_db > 70.0:
         t_db = t_db / 10.0
@@ -82,33 +82,48 @@ def calculate_humidity_and_dewpoint(t_db, t_wb, altitude_m):
     if t_wb > t_db:
         raise ValueError("Wet bulb temperature cannot be greater than dry bulb temperature.")
         
-    # 1. Derive station pressure (P) in hPa based on altitude
-    P = 1013.25 * math.pow(1 - (0.00065 * altitude_m) / 288.15, 5.2558)
+    # 1. Derive station pressure (P) in hPa using the Service's 3 slide-rule brackets
+    if altitude_m >= 1300.0:
+        P = 860.0    # Bracket i): 1300m to 2000m+
+    elif 700.0 <= altitude_m < 1300.0:
+        P = 900.0    # Bracket ii): 700m to 1300m
+    else:
+        P = 960.0    # Bracket iii): Below 700m (e.g., Kanyemba)
     
-    # 2. Saturation vapor pressure (es) via Tetens Equation
-    es_wb = 6.1078 * math.pow(10, (7.5 * t_wb) / (t_wb + 237.3))
-    es_db = 6.1078 * math.pow(10, (7.5 * t_db) / (t_db + 237.3))
+    # 2. Saturation vapor pressure (es) via Regnault's Equation (Uses natural base 'e')
+    es_wb = 6.105 * math.exp((17.269 * t_wb) / (t_wb + 237.3))
+    es_db = 6.105 * math.exp((17.269 * t_db) / (t_db + 237.3))
     
-    # 3. Actual vapor pressure (e) using standard baseline psychrometric constant adjustment
-    A = 0.000799 * (1 + 0.00115 * t_wb)
-    e = es_wb - A * P * (t_db - t_wb)
+    # 3. Actual vapor pressure (e) using Regnault's unventilated psychrometric factor (0.0008)
+    e = es_wb - 0.0008 * P * (t_db - t_wb)
+    
+    # Safety clamp to ensure vapor pressure doesn't drop beneath zero
+    if e < 0.01:
+        e = 0.01
     
     # 4. Compute Relative Humidity (RH) capped strictly between 0% and 100%
     rh = (e / es_db) * 100
     rh = max(0.0, min(100.0, rh))
     
-    # 5. Compute Dewpoint (Td)
+    # 5. Compute Dewpoint (Td) using the inverse Regnault formula
     if e > 0:
-        log_e = math.log10(e / 6.1078)
-        t_dp = (237.3 * log_e) / (7.5 - log_e)
+        ln_e = math.log(e / 6.105)
+        t_dp = (237.3 * ln_e) / (17.269 - ln_e)
     else:
         t_dp = float('-inf') 
         
     return {
-        "station_pressure_hPa": round(P, 1),
+        "applied_slide_rule_pressure_hPa": P,
         "relative_humidity_pct": round(rh, 1),
         "dewpoint_c": round(t_dp, 1)
     }
 
 if __name__ == "__main__":
     print(f"Successfully loaded {len(ZIM_STATIONS)} Zimbabwean stations into the registry!")
+    
+    # Test case verifying Kanyemba at 382m altitude matching the circular slide rule
+    test_kanyemba = calculate_humidity_and_dewpoint(30.9, 17.7, ZIM_STATIONS["Kanyemba"]["altitude_m"])
+    print(f"\nTest Kanyemba (30.9 DB, 17.7 WB):")
+    print(f"-> Pressure Bracket Used: {test_kanyemba['applied_slide_rule_pressure_hPa']} hPa")
+    print(f"-> Calculated RH: {test_kanyemba['relative_humidity_pct']}% (Slide rule: 23%)")
+    print(f"-> Calculated Dew Point: {test_kanyemba['dewpoint_c']}°C (Slide rule: 7.8°C)")
