@@ -15,7 +15,7 @@ ZIM_STATIONS = {
     "Chiredzi": {"altitude_m": 429, "province": "Masvingo"} ,
     
     # --- New Additions (Batch 2) ---
-    "Rupike": {"altitude_m": 695, "province": "Masvingo"},
+    "Rupike": {"altitude_m": 700, "province": "Masvingo"},
     "Banket": {"altitude_m": 1149, "province": "Mashonaland West"},
     "Grand Reef": {"altitude_m": 1016, "province": "Manicaland"},
     "Rupire Mountain": {"altitude_m": 1210, "province": "Mashonaland Central"},
