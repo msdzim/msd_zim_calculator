@@ -90,7 +90,7 @@ def calculate_humidity_and_dewpoint(t_db, t_wb, altitude_m):
     es_db = 6.1078 * math.pow(10, (7.5 * t_db) / (t_db + 237.3))
     
     # 3. Actual vapor pressure (e) using standard baseline psychrometric constant adjustment
-    A = 0.00066 * (1 + 0.00115 * t_wb)
+    A = 0.000799 * (1 + 0.00115 * t_wb)
     e = es_wb - A * P * (t_db - t_wb)
     
     # 4. Compute Relative Humidity (RH) capped strictly between 0% and 100%
